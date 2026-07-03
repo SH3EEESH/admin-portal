@@ -17,6 +17,6 @@ This project will turn into a standalone Identity and Access Management (IAM) mi
 * **Security:** JWT (Session Management), bcrypt (Password Hashing)
 
 ## Local Development Setup (For groupmates)
-1. Clone the repository: `git clone https://github.com/SH3EEESH/admin-portal.git` (npx doesnt like capital letters)
+1. Clone the repository: `git clone https://github.com/SH3EEESH/admin-portal.git`
 2. Install dependencies: `npm install`
 3. Start the development server: `npm start`
