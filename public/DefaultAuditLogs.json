@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "user": "MLZH_admin",
+    "action": "LOGIN_SUCCESS",
+    "timestamp": "2026-07-05T10:00:00Z",
+    "ip": "192.168.1.50"
+  },
+  {
+    "id": 2,
+    "user": "unknown_user",
+    "action": "LOGIN_FAILED",
+    "timestamp": "2026-07-05T10:45:00Z",
+    "ip": "10.0.0.12"
+  },
+  {
+    "id": 3,
+    "user": "unknown_user",
+    "action": "LOGIN_FAILED",
+    "timestamp": "2026-07-05T10:46:00Z",
+    "ip": "10.0.0.12"
+  },
+  {
+    "id": 4,
+    "user": "admin",
+    "action": "LOGIN_FAILED",
+    "timestamp": "2026-07-05T10:47:00Z",
+    "ip": "10.0.0.12"
+  },
+  {
+    "id": 5,
+    "user": "SYSTEM",
+    "action": "IP_BLOCKED",
+    "timestamp": "2026-07-05T10:48:00Z",
+    "ip": "10.0.0.12"
+  },
+  {
+    "id": 6,
+    "user": "sys_service",
+    "action": "PASSWORD_RESET",
+    "timestamp": "2026-07-05T11:00:00Z",
+    "ip": "192.168.1.101"
+  }
+]
