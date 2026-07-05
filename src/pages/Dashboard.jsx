@@ -1,54 +1,63 @@
 import React, { useState } from 'react';
 
 function Dashboard() {
+  // Store the list of active access roles shown in the left column
   const [roles, setRoles] = useState([
     { id: 1, name: 'System Administrators', users: 4, level: 'Full Access', isFullAccess: true },
     { id: 2, name: 'Standard Users', users: 131, level: 'Restricted', isFullAccess: false }
   ]);
 
+  // Store the list of connected infrastructure nodes shown in the right column
   const [nodes, setNodes] = useState([
     { id: 1, name: 'Primary Auth Database', flag: '🇺🇸', ip: '101.103.255.255', hostname: 'db-01.sentinel.local', load: '12%' }
   ]);
 
+  // Track which card is currently hovered so its visual style can change
   const [hoveredCardId, setHoveredCardId] = useState(null);
 
+  // Remove a role card from the list when the user clicks Remove
   const handleRemoveRole = (id) => {
     setRoles(roles.filter(role => role.id !== id));
   };
 
+  // Remove a node card from the list when the user clicks Remove
   const handleRemoveNode = (id) => {
     setNodes(nodes.filter(node => node.id !== id));
   };
 
+  // Apply the hover style only to the card that is currently being hovered
   const cardStyle = (id) => hoveredCardId === id ? { ...styles.card, ...styles.cardHover } : styles.card;
 
   return (
     <div>
-      {/* Header */}
+      {/* Top section with the page title and current status badge */}
       <div style={styles.header}>
         <h1 style={styles.title}>Headquarters</h1>
         <span style={styles.statusBadge}>● Active</span>
       </div>
 
-      {/* Tabs */}
+      {/* Current dashboard section tab shown below the header */}
       <div style={styles.tabs}>
         <span style={styles.activeTab}>General</span>
       </div>
 
-      {/* 2-Column Grid */}
+      {/* Main dashboard layout split into two side-by-side sections */}
       <div style={styles.grid}>
         
-        {/* Left Column: Roles */}
+        {/* Left column for displaying and managing active roles */}
         <div style={styles.columnWrapper}>
           <div style={styles.colHeader}>
             <h3 style={styles.columnTitle}>Active Roles</h3>
           </div>
           
+          {/* Render one card for each active role in the list */}
           {roles.map(role => (
             <div
               key={role.id}
               style={cardStyle(role.id)}
+              // Show hover feedback when the user moves over a role card
               onMouseEnter={() => setHoveredCardId(role.id)}
+              // Reset the hover state when the cursor leaves the card
               onMouseLeave={() => setHoveredCardId(null)}
             >
               <div style={styles.cardTop}>
@@ -66,6 +75,7 @@ function Dashboard() {
               </div>
             </div>
           ))}
+          {/* Show a message if there are no roles left to display */}
           {roles.length === 0 && (
             <div style={{ color: '#8b949e', fontStyle: 'italic', padding: '10px 0', fontFamily: 'monospace' }}>
               No active roles.
@@ -73,17 +83,20 @@ function Dashboard() {
           )}
         </div>
 
-        {/* Right Column: Connected Nodes */}
+        {/* Right column for displaying connected infrastructure nodes */}
         <div style={styles.columnWrapper}>
           <div style={styles.colHeader}>
             <h3 style={styles.columnTitle}>Connected Nodes</h3>
           </div>
 
+          {/* Render one card for each connected node in the list */}
           {nodes.map(node => (
             <div
               key={node.id}
               style={cardStyle(node.id)}
+              // Show hover feedback when the user moves over a node card
               onMouseEnter={() => setHoveredCardId(node.id)}
+              // Clear the hover state when the cursor leaves the node card
               onMouseLeave={() => setHoveredCardId(null)}
             >
               <div style={styles.cardTop}>
@@ -97,6 +110,7 @@ function Dashboard() {
               </div>
             </div>
           ))}
+          {/* Show a message if there are no nodes left to display */}
           {nodes.length === 0 && (
             <div style={{ color: '#8b949e', fontStyle: 'italic', padding: '10px 0', fontFamily: 'monospace' }}>
               No connected nodes.

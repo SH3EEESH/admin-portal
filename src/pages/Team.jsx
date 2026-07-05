@@ -3,27 +3,27 @@ import React from 'react';
 function Team() {
   return (
     <div>
-      {/* Header */}
+      {/* Top section with the team title and total member count */}
       <div style={styles.header}>
         <h1 style={styles.title}>MLZH Productions</h1>
         <span style={styles.statusBadge}>● 4 Members</span>
       </div>
 
-      {/* Tabs */}
+      {/* Active tab showing the current team section */}
       <div style={styles.tabs}>
         <span style={styles.activeTab}>Architecture Team</span>
       </div>
 
-      {/* 2-Column Grid */}
+      {/* Main team content arranged into two columns for different focus areas */}
       <div style={styles.grid}>
         
-        {/* Left Column: Backend & Security */}
+        {/* Left column for backend and security team members */}
         <div style={styles.columnWrapper}>
           <div style={styles.colHeader}>
             <h3 style={styles.columnTitle}>Backend & Security</h3>
           </div>
           
-          {/* Mihail Stegall */}
+          {/* Card for Mihail, who focuses on database design and security structure */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
               <strong style={styles.cardTitle}>👤 Mihail Stegall</strong>
@@ -31,17 +31,19 @@ function Team() {
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
+                {/* Main responsibility for this team member */}
                 <span>Primary Focus</span>
                 <span style={styles.value}>PostgreSQL Schema</span>
               </div>
               <div style={styles.row}>
+                {/* Related system or infrastructure area for this role */}
                 <span>Infrastructure</span>
                 <span style={styles.value}>IAM & Security</span>
               </div>
             </div>
           </div>
 
-          {/* Zachary Dinkelman */}
+          {/* Card for Zachary, who leads backend development and authentication work */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
               <strong style={styles.cardTitle}>👤 Zachary Dinkelman</strong>
@@ -49,10 +51,12 @@ function Team() {
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
+                {/* Main responsibility for this team member */}
                 <span>Primary Focus</span>
                 <span style={styles.value}>Node.js / Express</span>
               </div>
               <div style={styles.row}>
+                {/* Authentication-related work covered by this role */}
                 <span>Authentication</span>
                 <span style={styles.value}>Auth Middleware & JWTs</span>
               </div>
@@ -60,31 +64,33 @@ function Team() {
           </div>
         </div>
 
-        {/* Right Column: Frontend UI/UX */}
+        {/* Right column for frontend and user experience team members */}
         <div style={styles.columnWrapper}>
           <div style={styles.colHeader}>
             <h3 style={styles.columnTitle}>Frontend UI/UX</h3>
           </div>
 
-          {/* Teammate L */}
+          {/* Card for Lucas, who handles the user interface experience */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
-              <strong style={styles.cardTitle}>👤 Teammate L</strong>
+              <strong style={styles.cardTitle}>👤 Lucas Adkins </strong>
               <span style={styles.btnLabel}>UI Engineer</span>
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
+                {/* Main responsibility for this team member */}
                 <span>Primary Focus</span>
                 <span style={styles.value}>React UI/UX</span>
               </div>
               <div style={styles.row}>
+                {/* External system integration work for this role */}
                 <span>Integration</span>
                 <span style={styles.value}>External API Integration</span>
               </div>
             </div>
           </div>
 
-          {/* Teammate H */}
+          {/* Card for Hunter, who focuses on routing and application state */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
               <strong style={styles.cardTitle}>👤 Hunter Morrow</strong>
@@ -92,10 +98,12 @@ function Team() {
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
+                {/* Main responsibility for this team member */}
                 <span>Primary Focus</span>
                 <span style={styles.value}>React Router</span>
               </div>
               <div style={styles.row}>
+                {/* State management area covered by this role */}
                 <span>State Management</span>
                 <span style={styles.value}>Application State</span>
               </div>

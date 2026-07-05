@@ -9,13 +9,13 @@ function App() {
   return (
     <Router>
       <div style={styles.appContainer}>
-        {/* The navigation bar persists across all views */}
+        {/* The navigation bar stays visible across all pages */}
         <NavigationBar /> 
         
-        {/* Layout container for Sidebar + Main Content */}
+        {/* Main layout with sidebar and content area */}
         <div style={styles.layoutContainer}>
           
-          {/* Dark Sidebar (in development) */}
+          {/* Side panel for project status and branding */}
           <div style={styles.sidebar}>
             <h2 style={styles.logo}>Sentinel IAM</h2>
             <div style={styles.inDevelopment}>
@@ -23,7 +23,7 @@ function App() {
             </div>
           </div>
 
-          {/* Main Content Area */}
+          {/* Page content changes based on the active route */}
           <div style={styles.main}>
             <Routes>
               <Route path="/" element={<Home />} />

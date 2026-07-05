@@ -3,62 +3,68 @@ import React from 'react';
 function Home() {
   return (
     <div>
-      {/* Header */}
+      {/* Top section with the page title and security status badge */}
       <div style={styles.header}>
         <h1 style={styles.title}>Sentinel Authentication</h1>
         <span style={styles.statusBadge}>● Secure</span>
       </div>
 
-      {/* Tabs */}
+      {/* Active tab for the current overview view */}
       <div style={styles.tabs}>
         <span style={styles.activeTab}>Overview</span>
       </div>
 
-      {/* 2-Column Grid */}
+      {/* Main content area split into two columns for system and security information */}
       <div style={styles.grid}>
         
-        {/* Left Column: System & Services */}
+        {/* Left column for system health, services, and infrastructure status */}
         <div style={styles.columnWrapper}>
           <div style={styles.colHeader}>
             <h3 style={styles.columnTitle}>System & Services</h3>
           </div>
           
-          {/* Card 1: Core Health */}
+          {/* First card shows the overall health of the authentication system */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
               <strong style={styles.cardTitle}>🖥️ Core Health</strong>
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
+                {/* Overall system health status */}
                 <span>Status</span>
                 <span style={{ color: '#3ebd28', fontWeight: 'bold' }}>All Systems Operational</span>
               </div>
               <div style={styles.row}>
+                {/* Service reliability percentage */}
                 <span>Uptime</span>
                 <span style={styles.value}>99.98%</span>
               </div>
               <div style={styles.row}>
+                {/* Number of currently active authentication sessions */}
                 <span>Active JWT Sessions</span>
                 <span style={styles.value}>142</span>
               </div>
             </div>
           </div>
 
-          {/* Card 2: Infrastructure Connections */}
+          {/* Second card lists the main infrastructure services and their availability */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
               <strong style={styles.cardTitle}>🔌 Infrastructure Connections</strong>
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
+                {/* Database service connection status */}
                 <span>PostgreSQL Database</span>
                 <span style={{ color: '#3ebd28', fontWeight: 'bold' }}>Connected</span>
               </div>
               <div style={styles.row}>
+                {/* API server connection status */}
                 <span>Node.js API Server</span>
                 <span style={{ color: '#3ebd28', fontWeight: 'bold' }}>Connected</span>
               </div>
               <div style={styles.row}>
+                {/* Security rule status */}
                 <span>Firewall Rules</span>
                 <span style={{ color: '#3ebd28', fontWeight: 'bold' }}>Active</span>
               </div>
@@ -66,27 +72,30 @@ function Home() {
           </div>
         </div>
 
-        {/* Right Column: Security Monitoring */}
+        {/* Right column for recent security alerts and monitoring details */}
         <div style={styles.columnWrapper}>
           <div style={styles.colHeader}>
             <h3 style={styles.columnTitle}>Security Monitoring</h3>
           </div>
 
-          {/* Card 3: Live Alerts */}
+          {/* Single alert card for recent security events and warnings */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
               <strong style={styles.cardTitle}>⚠️ Live Alerts</strong>
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
+                {/* Recent failed sign-in attempts */}
                 <span>Failed Logins (1h)</span>
                 <span style={{ color: '#f8e300', fontWeight: 'bold' }}>3 Failed</span>
               </div>
               <div style={styles.row}>
+                {/* Blocked IP addresses from recent security activity */}
                 <span>IP Address Blocks</span>
                 <span style={{ color: '#f85149', fontWeight: 'bold' }}>1 Blocked (10.0.0.12)</span>
               </div>
               <div style={styles.row}>
+                {/* Time since the last audit scan was completed */}
                 <span>Last Audit Scan</span>
                 <span style={styles.value}>2 mins ago</span>
               </div>

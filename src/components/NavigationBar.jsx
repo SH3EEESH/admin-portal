@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 export default function NavigationBar() {
+  // Main navigation bar for the app routes
   return (
     <nav style={styles.navbar}>
       <div style={styles.logoContainer}>
@@ -13,11 +14,13 @@ export default function NavigationBar() {
           to="/" 
           style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
           className="nav-link"
+          // When the mouse enters, the link gets a lift and highlight effect
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = styles.linkHover.transform;
             e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
             e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
           }}
+          // When the mouse leaves, the link returns to its normal look
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = '';
             e.currentTarget.style.backgroundColor = '';
@@ -30,11 +33,13 @@ export default function NavigationBar() {
           to="/dashboard" 
           style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
           className="nav-link"
+          // Hover effect for the dashboard link
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = styles.linkHover.transform;
             e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
             e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
           }}
+          // Reset the dashboard link when the cursor moves away
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = '';
             e.currentTarget.style.backgroundColor = '';
@@ -47,11 +52,13 @@ export default function NavigationBar() {
           to="/team" 
           style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
           className="nav-link"
+          // Hover effect for the team link
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = styles.linkHover.transform;
             e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
             e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
           }}
+          // Return the team link to its original styling after hover
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = '';
             e.currentTarget.style.backgroundColor = '';
@@ -64,11 +71,13 @@ export default function NavigationBar() {
           to="/logs" 
           style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
           className="nav-link"
+          // Hover effect for the audit logs link
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = styles.linkHover.transform;
             e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
             e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
           }}
+          // Clear the hover styling when the cursor leaves the link
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = '';
             e.currentTarget.style.backgroundColor = '';
@@ -82,6 +91,7 @@ export default function NavigationBar() {
   );
 }
 
+// Shared styles for the navbar and its links
 const styles = {
   navbar: {
     display: 'flex',
