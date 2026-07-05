@@ -87,7 +87,7 @@ function Team() {
           {/* Teammate H */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
-              <strong style={styles.cardTitle}>👤 Teammate H</strong>
+              <strong style={styles.cardTitle}>👤 Hunter Morrow</strong>
               <span style={styles.btnLabel}>State Specialist</span>
             </div>
             <div style={styles.cardBottom}>

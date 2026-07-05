@@ -12,24 +12,68 @@ export default function NavigationBar() {
         <NavLink 
           to="/" 
           style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
+          className="nav-link"
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = styles.linkHover.transform;
+            e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
+            e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = '';
+            e.currentTarget.style.backgroundColor = '';
+            e.currentTarget.style.boxShadow = '';
+          }}
         >
           Home
         </NavLink>
         <NavLink 
           to="/dashboard" 
           style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
+          className="nav-link"
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = styles.linkHover.transform;
+            e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
+            e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = '';
+            e.currentTarget.style.backgroundColor = '';
+            e.currentTarget.style.boxShadow = '';
+          }}
         >
           Dashboard
         </NavLink>
         <NavLink 
           to="/team" 
           style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
+          className="nav-link"
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = styles.linkHover.transform;
+            e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
+            e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = '';
+            e.currentTarget.style.backgroundColor = '';
+            e.currentTarget.style.boxShadow = '';
+          }}
         >
           Team
         </NavLink>
         <NavLink 
           to="/logs" 
           style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
+          className="nav-link"
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = styles.linkHover.transform;
+            e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
+            e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = '';
+            e.currentTarget.style.backgroundColor = '';
+            e.currentTarget.style.boxShadow = '';
+          }}
         >
           Audit Logs
         </NavLink>
@@ -80,10 +124,19 @@ const styles = {
     fontWeight: 'bold',
     padding: '6px 12px',
     borderRadius: '6px',
-    transition: 'all 0.2s ease-in-out'
+    transition: 'all 0.2s ease-in-out',
+    transform: 'translateY(0) scale(1)',
+    display: 'inline-block',
+    position: 'relative'
   },
   activeLink: {
     color: '#3ebd28',
     backgroundColor: 'rgba(62, 189, 40, 0.15)'
+  },
+  linkHover: {
+    color: '#ffffff',
+    transform: 'translateY(-2px) scale(1.05)',
+    backgroundColor: 'rgba(88, 166, 255, 0.12)',
+    boxShadow: '0 4px 12px rgba(88, 166, 255, 0.16)'
   }
 };
