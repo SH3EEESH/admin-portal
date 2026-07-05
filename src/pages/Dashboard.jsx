@@ -10,6 +10,8 @@ function Dashboard() {
     { id: 1, name: 'Primary Auth Database', flag: '🇺🇸', ip: '101.103.255.255', hostname: 'db-01.sentinel.local', load: '12%' }
   ]);
 
+  const [hoveredCardId, setHoveredCardId] = useState(null);
+
   const handleRemoveRole = (id) => {
     setRoles(roles.filter(role => role.id !== id));
   };
@@ -17,6 +19,8 @@ function Dashboard() {
   const handleRemoveNode = (id) => {
     setNodes(nodes.filter(node => node.id !== id));
   };
+
+  const cardStyle = (id) => hoveredCardId === id ? { ...styles.card, ...styles.cardHover } : styles.card;
 
   return (
     <div>
@@ -41,7 +45,12 @@ function Dashboard() {
           </div>
           
           {roles.map(role => (
-            <div key={role.id} style={styles.card}>
+            <div
+              key={role.id}
+              style={cardStyle(role.id)}
+              onMouseEnter={() => setHoveredCardId(role.id)}
+              onMouseLeave={() => setHoveredCardId(null)}
+            >
               <div style={styles.cardTop}>
                 <strong style={styles.cardTitle}>👥 {role.name}</strong>
                 <button style={styles.btn} onClick={() => handleRemoveRole(role.id)}>Remove</button>
@@ -71,7 +80,12 @@ function Dashboard() {
           </div>
 
           {nodes.map(node => (
-            <div key={node.id} style={styles.card}>
+            <div
+              key={node.id}
+              style={cardStyle(node.id)}
+              onMouseEnter={() => setHoveredCardId(node.id)}
+              onMouseLeave={() => setHoveredCardId(null)}
+            >
               <div style={styles.cardTop}>
                 <strong style={styles.cardTitle}>{node.flag} {node.name}</strong>
                 <button style={styles.btn} onClick={() => handleRemoveNode(node.id)}>Remove</button>
@@ -158,7 +172,13 @@ const styles = {
     backgroundColor: '#0d1117', 
     border: '1px solid #30363d', 
     borderRadius: '6px', 
-    marginBottom: '15px' 
+    marginBottom: '15px',
+    transition: 'all 0.2s ease-in-out' 
+  },
+  cardHover: {
+    transform: 'translateY(-2px)',
+    borderColor: '#58a6ff',
+    boxShadow: '0 8px 20px rgba(88, 166, 255, 0.12)'
   },
   cardTop: { 
     display: 'flex', 
