@@ -20,3 +20,7 @@ This project will turn into a standalone Identity and Access Management (IAM) mi
 1. Clone the repository: `git clone https://github.com/SH3EEESH/admin-portal.git`
 2. Install dependencies: `npm install`
 3. Start the development server: `npm start`
+
+## Development Rules
+1.Verify 'node_modules' is ignored before commiting any changes
+2.Write concise and descriptive commit messages.
