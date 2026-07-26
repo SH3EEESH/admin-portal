@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import Team from './pages/Team';
 import Dashboard from './pages/Dashboard';
 import AuditLogs from './pages/AuditLogs';
-import Login from './pages/Login';
+import Login from './pages/Login.jsx';
 import Register from './pages/Register';
 import UserHub from './pages/UserHub';
 import AccessDenied from './pages/AccessDenied';
@@ -78,6 +78,7 @@ function App() {
                 <>
                   <Route path="/login" element={<Login onLogin={handleLogin} />} />
                   <Route path="/register" element={<Register onLogin={handleLogin} />} />
+                  <Route path="/" element={<Login onLogin={handleLogin} />} />
                   <Route path="*" element={<Navigate to="/login" replace />} />
                 </>
               ) : (
