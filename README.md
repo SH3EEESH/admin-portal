@@ -28,4 +28,4 @@ This project will turn into a standalone Identity and Access Management (IAM) mi
 ## Course Information
 1. Course: COSC 3351 - Internet Programming
 2. Semester: Summer 2026
-3. Assignment: Assignment 4 (Foundation for final project)
+3. Assignment: Progress Integration Checkpoint
