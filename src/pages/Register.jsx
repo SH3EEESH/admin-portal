@@ -30,6 +30,7 @@ export default function Register({ onLogin }) {
     setSuccess('');
 
     try {
+      console.log('Register request payload:', { username, email });
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -38,15 +39,28 @@ export default function Register({ onLogin }) {
         body: JSON.stringify({ username, email, password }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      console.log('Register response raw:', { status: response.status, text });
+      let data = {};
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error('Received invalid response from the registration server.');
+        }
+      }
+      console.log('Register response parsed:', data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Registration failed.');
+        throw new Error(data.error || data.message || text || 'Registration failed.');
+      }
+
+      if (!data.token || !data.user) {
+        throw new Error('Registration succeeded but the server returned incomplete session data.');
       }
 
       setSuccess('Account created successfully! Logging in...');
 
-      // Save the authentication token and user profile to browser storage.
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
@@ -56,6 +70,7 @@ export default function Register({ onLogin }) {
         navigate('/user-hub');
       }, 1500);
     } catch (err) {
+      console.error('Register error:', err);
       setError(err.message);
     } finally {
       setLoading(false);

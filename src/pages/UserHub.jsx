@@ -12,6 +12,15 @@ export default function UserHub() {
 
   const canvasRef = useRef(null);
 
+  // Difficulty selection for the sandbox game: Easy | Normal | Hard
+  const [difficulty, setDifficulty] = useState('Normal');
+  const difficultyRef = useRef('Normal');
+
+  // Keep difficultyRef in sync so the game loop can read latest value without re-registering the effect.
+  useEffect(() => {
+    difficultyRef.current = difficulty;
+  }, [difficulty]);
+
   // Game states: IDLE, PLAYING, GAMEOVER.
   const [gameState, setGameState] = useState('IDLE');
   const [score, setScore] = useState(0);
@@ -63,7 +72,8 @@ export default function UserHub() {
     };
 
     let obstacles = [];
-    let gameSpeed = 5;
+    const baseSpeed = 5;
+    let gameSpeed = baseSpeed * (difficultyRef.current === 'Easy' ? 0.8 : difficultyRef.current === 'Hard' ? 1.4 : 1);
 
     // Listener for spacebar jump triggers.
     const handleKeyDown = (e) => {
@@ -138,7 +148,7 @@ export default function UserHub() {
 
         // Increase the horizontal speed gradually over time.
         if (scoreRef.current % 300 === 0) {
-          gameSpeed += 0.5;
+          gameSpeed += 0.5 * (difficultyRef.current === 'Easy' ? 0.8 : difficultyRef.current === 'Hard' ? 1.4 : 1);
         }
 
         // Apply gravitational acceleration to the vertical movement.
@@ -152,9 +162,11 @@ export default function UserHub() {
           dino.isGrounded = true;
         }
 
-        // Generate incoming block obstacles randomly.
+        // Generate incoming block obstacles randomly with difficulty-adjusted spawn rate.
         obstacleTimerRef.current++;
-        if (obstacleTimerRef.current > 80 + Math.random() * 40) {
+        const spawnBase = 80 + Math.random() * 40;
+        const spawnMultiplier = difficultyRef.current === 'Easy' ? 1.6 : difficultyRef.current === 'Hard' ? 0.6 : 1;
+        if (obstacleTimerRef.current > spawnBase * spawnMultiplier) {
           obstacleTimerRef.current = 0;
           const obsHeight = 20 + Math.random() * 15;
           obstacles.push({
@@ -246,20 +258,43 @@ export default function UserHub() {
       </div>
 
       <div style={styles.grid}>
-        {/* Profile card container. */}
-        <div style={styles.profileCard}>
-          <div style={styles.avatar}>👤</div>
-          <h2 style={styles.username}>{user.username}</h2>
-          <span style={styles.roleBadge}>User</span>
+        {/* Left column: profile and IAM role/permissions */}
+        <div>
+          {/* Profile card container. */}
+          <div style={styles.profileCard}>
+            <div style={styles.avatar}>👤</div>
+            <h2 style={styles.username}>{user.username}</h2>
+            <span style={styles.roleBadge}>{user.role}</span>
 
-          <div style={styles.detailsList}>
-            <div style={styles.detailRow}>
-              <span>Email</span>
-              <strong style={styles.detailValue}>{user.email}</strong>
+            <div style={styles.detailsList}>
+              <div style={styles.detailRow}>
+                <span>Email</span>
+                <strong style={styles.detailValue}>{user.email}</strong>
+              </div>
+              <div style={styles.detailRow}>
+                <span>Access Level</span>
+                <strong style={{ color: '#58a6ff' }}>{user.role === 'Admin' ? 'Full Access' : 'Restricted'}</strong>
+              </div>
             </div>
-            <div style={styles.detailRow}>
-              <span>Access Level</span>
-              <strong style={{ color: '#58a6ff' }}>Restricted</strong>
+          </div>
+
+          {/* IAM Role & Permissions card */}
+          <div style={styles.roleCard}>
+            <h3 style={styles.roleCardTitle}>IAM Role & Permissions</h3>
+            <div style={styles.roleInfo}>
+              <div style={styles.roleRow}><span>Username</span><strong style={styles.detailValue}>{user.username}</strong></div>
+              <div style={styles.roleRow}><span>Email</span><strong style={styles.detailValue}>{user.email}</strong></div>
+              <div style={styles.roleRow}><span>Role</span><strong style={styles.detailValue}>{user.role}</strong></div>
+              <div style={styles.roleRow}><span>Account Status</span><strong style={{ color: '#3ebd28' }}>Active</strong></div>
+            </div>
+
+            <div style={{ marginTop: '12px' }}>
+              <div style={{ color: '#8b949e', marginBottom: '8px' }}>Permissions</div>
+              <ul style={styles.permissionList}>
+                {(user.role === 'Admin' ? ['Manage Users', 'View Audit Logs', 'Edit Settings', 'Manage Roles'] : ['Play Sandbox', 'View Profile', 'Submit Feedback']).map((p) => (
+                  <li key={p} style={styles.permissionItem}>{p}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -267,7 +302,20 @@ export default function UserHub() {
         {/* Sandbox canvas container. */}
         <div style={styles.gameCard}>
           <div style={styles.gameHeader}>
-            <h3 style={styles.gameTitle}>Dinosaur Sandbox Game</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <h3 style={styles.gameTitle}>Dinosaur Sandbox Game</h3>
+              <div style={styles.difficultyGroup}>
+                {['Easy','Normal','Hard'].map((lvl) => (
+                  <button
+                    key={lvl}
+                    onClick={() => setDifficulty(lvl)}
+                    style={lvl === difficulty ? { ...styles.difficultyBtn, ...styles.difficultyActive } : styles.difficultyBtn}
+                  >
+                    {lvl}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div style={styles.scoreBoard}>
               <span style={styles.scoreText}>Score: {score}</span>
               <span style={styles.scoreText}>High Score: {highScore}</span>
@@ -366,6 +414,42 @@ const styles = {
   detailValue: {
     color: '#ffffff'
   },
+  // New IAM role card styles
+  roleCard: {
+    backgroundColor: '#161b22',
+    border: '1px solid #30363d',
+    borderRadius: '6px',
+    padding: '16px 18px',
+    marginTop: '16px'
+  },
+  roleCardTitle: {
+    color: '#ffffff',
+    fontFamily: 'monospace',
+    margin: '0 0 8px 0',
+    fontSize: '0.95rem'
+  },
+  roleInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px'
+  },
+  roleRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    color: '#8b949e',
+    fontSize: '0.85rem'
+  },
+  permissionList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0
+  },
+  permissionItem: {
+    padding: '6px 0',
+    borderBottom: '1px dashed #30363d',
+    color: '#c9d1d9',
+    fontSize: '0.85rem'
+  },
   gameCard: {
     backgroundColor: '#161b22',
     border: '1px solid #30363d',
@@ -392,6 +476,25 @@ const styles = {
     color: '#ffffff',
     fontSize: '0.9rem',
     fontFamily: 'monospace'
+  },
+  // Difficulty buttons
+  difficultyGroup: {
+    display: 'flex',
+    gap: '6px'
+  },
+  difficultyBtn: {
+    backgroundColor: '#0d1117',
+    color: '#8b949e',
+    border: '1px solid #30363d',
+    padding: '6px 8px',
+    borderRadius: '6px',
+    fontSize: '0.8rem',
+    cursor: 'pointer'
+  },
+  difficultyActive: {
+    backgroundColor: 'rgba(62, 189, 40, 0.12)',
+    color: '#3ebd28',
+    borderColor: '#3ebd28'
   },
   canvasContainer: {
     backgroundColor: '#0d1117',

@@ -25,6 +25,7 @@ export default function Login({ onLogin }) {
     setError('');
 
     try {
+      console.log('Login request payload:', { usernameOrEmail });
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -33,17 +34,29 @@ export default function Login({ onLogin }) {
         body: JSON.stringify({ usernameOrEmail, password }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      console.log('Login response raw:', { status: response.status, text });
+      let data = {};
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error('Received invalid response from the authentication server.');
+        }
+      }
+      console.log('Login response parsed:', data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Login failed.');
+        throw new Error(data.error || data.message || text || 'Login failed.');
       }
 
-      // Save the authentication token and user profile in browser storage.
+      if (!data.token || !data.user) {
+        throw new Error('Authentication response is missing session data.');
+      }
+
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      // Inform the App component that login succeeded.
       onLogin(data.user, data.token);
 
       // Route the user to the correct home page based on their role.
@@ -53,6 +66,7 @@ export default function Login({ onLogin }) {
         navigate('/user-hub');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError(err.message);
     } finally {
       setLoading(false);

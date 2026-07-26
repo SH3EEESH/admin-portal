@@ -6,7 +6,7 @@ const db = require('./db');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 const JWT_SECRET = process.env.JWT_SECRET || 'sentinel_jwt_secret_key_987654321';
 
 // Enable CORS and JSON parsing for the React frontend.
