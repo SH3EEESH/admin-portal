@@ -24,3 +24,8 @@ This project will turn into a standalone Identity and Access Management (IAM) mi
 ## Development Rules
 1.Verify 'node_modules' is ignored before commiting any changes
 2.Write concise and descriptive commit messages.
+
+## Course Information
+1. Course: COSC 3351 - Internet Programming
+2. Semester: Summer 2026
+3. Assignment: Group Project
