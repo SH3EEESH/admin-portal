@@ -1,6 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 function Home() {
+  const [stats, setStats] = useState({
+    users: { total: 1, admins: 1, standards: 0 },
+    health: { activeSessions: 1, failedLogins: 0, ipBlocks: 1 }
+  });
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    fetch('/api/stats', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch stats');
+        return res.json();
+      })
+      .then(data => {
+        if (data.users && data.health) {
+          setStats(data);
+        }
+      })
+      .catch(err => console.error('Error fetching dashboard stats:', err));
+  }, []);
+
   return (
     <div>
       {/* Top section with the page title and security status badge */}
@@ -42,7 +66,7 @@ function Home() {
               <div style={styles.row}>
                 {/* Number of currently active authentication sessions */}
                 <span>Active JWT Sessions</span>
-                <span style={styles.value}>142</span>
+                <span style={styles.value}>{stats.health.activeSessions}</span>
               </div>
             </div>
           </div>
@@ -87,12 +111,16 @@ function Home() {
               <div style={styles.row}>
                 {/* Recent failed sign-in attempts */}
                 <span>Failed Logins (1h)</span>
-                <span style={{ color: '#f8e300', fontWeight: 'bold' }}>3 Failed</span>
+                <span style={{ color: stats.health.failedLogins > 0 ? '#f8e300' : '#8b949e', fontWeight: 'bold' }}>
+                  {stats.health.failedLogins} Failed
+                </span>
               </div>
               <div style={styles.row}>
                 {/* Blocked IP addresses from recent security activity */}
                 <span>IP Address Blocks</span>
-                <span style={{ color: '#f85149', fontWeight: 'bold' }}>1 Blocked (10.0.0.12)</span>
+                <span style={{ color: stats.health.ipBlocks > 0 ? '#f85149' : '#8b949e', fontWeight: 'bold' }}>
+                  {stats.health.ipBlocks} Blocked
+                </span>
               </div>
               <div style={styles.row}>
                 {/* Time since the last audit scan was completed */}

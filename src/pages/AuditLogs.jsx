@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
 
+// Page that displays the latest authentication and security events from the API.
 export default function AuditLogs() {
-  // Store the audit log entries retrieved from the JSON file
+  // Store the audit log entries retrieved from the server.
   const [logs, setLogs] = useState([]);
 
-  // Track whether the log data is still being loaded
+  // Track whether the log data is still being loaded.
   const [loading, setLoading] = useState(true);
 
-  // Store any error message if the logs fail to load
+  // Store any error message if the logs fail to load.
   const [error, setError] = useState(null);
 
-  // Load the audit log data once when the component first opens
+  // Load the audit log data once when the component first opens.
   useEffect(() => {
-    fetch(`${process.env.PUBLIC_URL}/DefaultAuditLogs.json`)
+    const token = localStorage.getItem('token');
+    fetch('/api/logs', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(response => {
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Unauthorized access to audit logs.');
+        }
         if (!response.ok) {
           throw new Error('Failed to load audit logs.');
         }
@@ -29,7 +38,7 @@ export default function AuditLogs() {
       });
   }, []);
 
-  // Choose a badge color based on whether the action was successful, failed, or informational
+  // Choose a badge color based on whether the action was successful, failed, or informational.
   const getActionStyle = (action) => {
     if (action.includes('SUCCESS')) {
       return { backgroundColor: 'rgba(62, 189, 40, 0.15)', color: '#3ebd28' };
@@ -42,35 +51,35 @@ export default function AuditLogs() {
 
   return (
     <div>
-      {/* Page title and live status indicator at the top */}
+      {/* Page title and live status indicator at the top. */}
       <div style={styles.header}>
         <h1 style={styles.title}>Audit Logs</h1>
         <span style={styles.statusBadge}>● Realtime</span>
       </div>
 
-      {/* Active tab showing the current log view section */}
+      {/* Active tab showing the current log view section. */}
       <div style={styles.tabs}>
         <span style={styles.activeTab}>System Events</span>
       </div>
 
-      {/* Main card that contains the recent authentication events table */}
+      {/* Main card that contains the recent authentication events table. */}
       <div style={styles.columnWrapper}>
         <div style={styles.colHeader}>
           <h3 style={styles.columnTitle}>Recent Authentication Events</h3>
         </div>
 
-        {/* Show a loading message while the logs are being fetched */}
+        {/* Show a loading message while the logs are being fetched. */}
         {loading && <div style={styles.message}>Loading logs...</div>}
 
-        {/* Show an error message if the file cannot be loaded */}
+        {/* Show an error message if the server fails to return the data. */}
         {error && <div style={{ ...styles.message, color: '#f85149' }}>Error: {error}</div>}
 
-        {/* Render the table only after the data has loaded successfully */}
+        {/* Render the table only after the data has loaded successfully. */}
         {!loading && !error && (
           <div style={styles.tableWrapper}>
             <table style={styles.table}>
               <thead>
-                {/* Table header row with column names */}
+                {/* Table header row with column names. */}
                 <tr style={styles.headerRow}>
                   <th style={styles.th}>Timestamp</th>
                   <th style={styles.th}>User</th>
@@ -79,15 +88,15 @@ export default function AuditLogs() {
                 </tr>
               </thead>
               <tbody>
-                {/* Loop through each log entry and display it as a row */}
+                {/* Loop through each log entry and display it as a row. */}
                 {logs.map((log) => (
                   <tr key={log.id} style={styles.row}>
-                    {/* Show the time the event happened */}
+                    {/* Show the time the event happened. */}
                     <td style={styles.tdTimestamp}>
                       {new Date(log.timestamp).toLocaleString()}
                     </td>
                     <td style={styles.tdUser}>
-                      <strong>{log.user}</strong>
+                      <strong>{log.username}</strong>
                     </td>
                     <td style={styles.td}>
                       <span style={{ ...styles.badge, ...getActionStyle(log.action) }}>
@@ -106,50 +115,51 @@ export default function AuditLogs() {
   );
 }
 
+// Shared styling for the audit log page.
 const styles = {
-  header: { 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: '15px', 
-    marginBottom: '25px' 
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '15px',
+    marginBottom: '25px'
   },
-  title: { 
-    margin: 0, 
-    fontSize: '2.2rem', 
+  title: {
+    margin: 0,
+    fontSize: '2.2rem',
     fontWeight: 'bold',
     color: '#3ebd28',
     fontFamily: 'monospace'
   },
-  statusBadge: { 
-    backgroundColor: 'rgba(62, 189, 40, 0.15)', 
-    color: '#3ebd28', 
-    padding: '6px 12px', 
-    borderRadius: '20px', 
-    fontSize: '0.85rem', 
-    fontWeight: 'bold' 
+  statusBadge: {
+    backgroundColor: 'rgba(62, 189, 40, 0.15)',
+    color: '#3ebd28',
+    padding: '6px 12px',
+    borderRadius: '20px',
+    fontSize: '0.85rem',
+    fontWeight: 'bold'
   },
-  tabs: { 
-    borderBottom: '1px solid #30363d', 
-    paddingBottom: '0px', 
-    marginBottom: '30px', 
-    display: 'flex', 
-    gap: '30px' 
+  tabs: {
+    borderBottom: '1px solid #30363d',
+    paddingBottom: '0px',
+    marginBottom: '30px',
+    display: 'flex',
+    gap: '30px'
   },
-  activeTab: { 
-    color: '#3ebd28', 
-    fontWeight: 'bold', 
-    borderBottom: '2px solid #3ebd28', 
-    paddingBottom: '12px', 
-    cursor: 'pointer' 
+  activeTab: {
+    color: '#3ebd28',
+    fontWeight: 'bold',
+    borderBottom: '2px solid #3ebd28',
+    paddingBottom: '12px',
+    cursor: 'pointer'
   },
-  columnWrapper: { 
-    backgroundColor: '#161b22', 
-    padding: '25px', 
+  columnWrapper: {
+    backgroundColor: '#161b22',
+    padding: '25px',
     borderRadius: '6px',
     border: '1px solid #30363d'
   },
-  colHeader: { 
-    marginBottom: '20px' 
+  colHeader: {
+    marginBottom: '20px'
   },
   columnTitle: {
     margin: 0,

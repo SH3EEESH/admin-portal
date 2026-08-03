@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-export default function NavigationBar() {
+export default function NavigationBar({ user }) {
+  const isAdmin = user && user.role === 'Admin';
   // Main navigation bar for the app routes
   return (
     <nav style={styles.navbar}>
@@ -10,82 +11,104 @@ export default function NavigationBar() {
         <span style={styles.logoText}>Sentinel IAM</span>
       </div>
       <div style={styles.navLinks}>
-        <NavLink 
-          to="/" 
-          style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
-          className="nav-link"
-          // When the mouse enters, the link gets a lift and highlight effect
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = styles.linkHover.transform;
-            e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
-            e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
-          }}
-          // When the mouse leaves, the link returns to its normal look
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = '';
-            e.currentTarget.style.backgroundColor = '';
-            e.currentTarget.style.boxShadow = '';
-          }}
-        >
-          Home
-        </NavLink>
-        <NavLink 
-          to="/dashboard" 
-          style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
-          className="nav-link"
-          // Hover effect for the dashboard link
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = styles.linkHover.transform;
-            e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
-            e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
-          }}
-          // Reset the dashboard link when the cursor moves away
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = '';
-            e.currentTarget.style.backgroundColor = '';
-            e.currentTarget.style.boxShadow = '';
-          }}
-        >
-          Dashboard
-        </NavLink>
-        <NavLink 
-          to="/team" 
-          style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
-          className="nav-link"
-          // Hover effect for the team link
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = styles.linkHover.transform;
-            e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
-            e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
-          }}
-          // Return the team link to its original styling after hover
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = '';
-            e.currentTarget.style.backgroundColor = '';
-            e.currentTarget.style.boxShadow = '';
-          }}
-        >
-          Team
-        </NavLink>
-        <NavLink 
-          to="/logs" 
-          style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
-          className="nav-link"
-          // Hover effect for the audit logs link
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = styles.linkHover.transform;
-            e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
-            e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
-          }}
-          // Clear the hover styling when the cursor leaves the link
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = '';
-            e.currentTarget.style.backgroundColor = '';
-            e.currentTarget.style.boxShadow = '';
-          }}
-        >
-          Audit Logs
-        </NavLink>
+        {isAdmin ? (
+          <>
+            <NavLink 
+              to="/" 
+              style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
+              className="nav-link"
+              // When the mouse enters, the link gets a lift and highlight effect
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = styles.linkHover.transform;
+                e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
+                e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
+              }}
+              // When the mouse leaves, the link returns to its normal look
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = '';
+                e.currentTarget.style.backgroundColor = '';
+                e.currentTarget.style.boxShadow = '';
+              }}
+            >
+              Home
+            </NavLink>
+            <NavLink 
+              to="/dashboard" 
+              style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
+              className="nav-link"
+              // Hover effect for the dashboard link
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = styles.linkHover.transform;
+                e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
+                e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
+              }}
+              // Reset the dashboard link when the cursor moves away
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = '';
+                e.currentTarget.style.backgroundColor = '';
+                e.currentTarget.style.boxShadow = '';
+              }}
+            >
+              Dashboard
+            </NavLink>
+            <NavLink 
+              to="/team" 
+              style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
+              className="nav-link"
+              // Hover effect for the team link
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = styles.linkHover.transform;
+                e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
+                e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
+              }}
+              // Return the team link to its original styling after hover
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = '';
+                e.currentTarget.style.backgroundColor = '';
+                e.currentTarget.style.boxShadow = '';
+              }}
+            >
+              Team
+            </NavLink>
+            <NavLink 
+              to="/logs" 
+              style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
+              className="nav-link"
+              // Hover effect for the audit logs link
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = styles.linkHover.transform;
+                e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
+                e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
+              }}
+              // Clear the hover styling when the cursor leaves the link
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = '';
+                e.currentTarget.style.backgroundColor = '';
+                e.currentTarget.style.boxShadow = '';
+              }}
+            >
+              Audit Logs
+            </NavLink>
+          </>
+        ) : (
+          <NavLink 
+            to="/user-hub" 
+            style={({ isActive }) => isActive ? { ...styles.link, ...styles.activeLink } : styles.link}
+            className="nav-link"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = styles.linkHover.transform;
+              e.currentTarget.style.backgroundColor = styles.linkHover.backgroundColor;
+              e.currentTarget.style.boxShadow = styles.linkHover.boxShadow;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = '';
+              e.currentTarget.style.backgroundColor = '';
+              e.currentTarget.style.boxShadow = '';
+            }}
+          >
+            User Hub
+          </NavLink>
+        )}
       </div>
     </nav>
   );

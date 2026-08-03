@@ -21,6 +21,22 @@ This project will turn into a standalone Identity and Access Management (IAM) mi
 2. Install dependencies: `npm install`
 3. Start the development server: `npm start`
 
+## Local DB setup
+1. Create .env file in server folder
+2. To run backend: `npm start`(seperate terminal)
+3. To run frontend: `cd server /--> npm start` (seperate terminal)
+4. Download PostsqreSQL --> create server (make sure server matches the following information)
+PORT=5000
+DB_HOST=localhost
+DB_PORT=5432
+DB_DATABASE=postgres
+DB_USER=postgres
+DB_PASSWORD=(your own password)
+JWT_SECRET=sentinel_jwt_secret_key_987654321
+
+5. make sure you locally run the server and make sure your .env is inside the server folder in this project
+
+   
 ## Development Rules
 1.Verify 'node_modules' is ignored before commiting any changes
 2.Write concise and descriptive commit messages.
