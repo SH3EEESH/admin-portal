@@ -37,3 +37,11 @@ JWT_SECRET=sentinel_jwt_secret_key_987654321
 5. make sure you locally run the server and make sure your .env is inside the server folder in this project
 
    
+## Development Rules
+1.Verify 'node_modules' is ignored before commiting any changes
+2.Write concise and descriptive commit messages.
+
+## Course Information
+1. Course: COSC 3351 - Internet Programming
+2. Semester: Summer 2026
+3. Assignment: Progress Integration Checkpoint
