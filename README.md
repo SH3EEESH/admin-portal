@@ -44,4 +44,4 @@ JWT_SECRET=sentinel_jwt_secret_key_987654321
 ## Course Information
 1. Course: COSC 3351 - Internet Programming
 2. Semester: Summer 2026
-3. Assignment: Progress Integration Checkpoint
+3. Assignment: Project submission
