@@ -1,64 +1,156 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Standard-user portal with a small sandbox game and profile summary.
+// User hub page with Dino game & feedback form
 export default function UserHub() {
-  // User profile information state.
   const [user, setUser] = useState({ username: 'User', email: 'user@sentinel.local', role: 'User' });
-
-  // High score tracking state retrieved from local storage.
   const [highScore, setHighScore] = useState(() => {
     return parseInt(localStorage.getItem('dino_highscore') || '0', 10);
   });
 
-  const canvasRef = useRef(null);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackSent, setFeedbackSent] = useState(false);
 
-  // Difficulty selection for the sandbox game: Easy | Normal | Hard
+  const canvasRef = useRef(null);
   const [difficulty, setDifficulty] = useState('Normal');
   const difficultyRef = useRef('Normal');
 
-  // Keep difficultyRef in sync so the game loop can read latest value without re-registering the effect.
   useEffect(() => {
     difficultyRef.current = difficulty;
   }, [difficulty]);
 
-  // Game states: IDLE, PLAYING, GAMEOVER.
   const [gameState, setGameState] = useState('IDLE');
   const [score, setScore] = useState(0);
 
-  // References to preserve state variables inside the animation frame loop.
   const gameStateRef = useRef('IDLE');
   const scoreRef = useRef(0);
   const obstacleTimerRef = useRef(0);
   const animationFrameIdRef = useRef(null);
 
-  // Load the signed-in user profile details from local storage when the component mounts.
+  // Helper to calculate score multiplier based on selected difficulty
+  const getMultiplier = (diff) => {
+    if (diff === 'Easy') return 0.25;
+    if (diff === 'Normal') return 0.5; // Medium/Normal = x0.5
+    if (diff === 'Hard') return 1.0;   // Hard = x1.0
+    return 0.5;
+  };
+
+  // Process leaderboard to keep strictly real scores for standard users, excluding Admins & System Services
+  const processLeaderboard = (rawScores) => {
+    const userBestMap = new Map();
+
+    rawScores.forEach(item => {
+      const uname = item.username;
+      // Exclude Admins, system service accounts, and unparsed default placeholders
+      if (!uname || uname === 'User' || uname === 'MLZH_admin' || uname === 'admin' || uname === 'sys_service') {
+        return;
+      }
+
+      const scoreNum = parseInt(item.score, 10) || 0;
+
+      if (!userBestMap.has(uname) || userBestMap.get(uname).score < scoreNum) {
+        userBestMap.set(uname, {
+          username: uname,
+          score: scoreNum,
+          difficulty: item.difficulty || 'Normal'
+        });
+      }
+    });
+
+    return Array.from(userBestMap.values())
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+  };
+
+  // Load profile from local storage and active accounts on mount
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
+    const activeAccs = JSON.parse(localStorage.getItem('sentinel_active_accounts') || '[]');
+
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        let parsed = JSON.parse(storedUser);
+        const match = activeAccs.find(a => a.username === parsed.username);
+        if (match && match.role_name) {
+          parsed.role = match.role_name;
+        }
+        setUser(parsed);
       } catch (e) {
         console.error('Failed to parse user session');
       }
     }
   }, []);
 
-  // Keep the mutable game state ref synchronized with the state value.
+  // Fetch real leaderboard scores from server API and local storage
+  const fetchLeaderboard = () => {
+    const token = localStorage.getItem('token');
+
+    fetch('/api/leaderboard', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.ok ? res.json() : [])
+      .then(data => {
+        const serverScores = Array.isArray(data) ? data : [];
+        const localScores = JSON.parse(localStorage.getItem('sentinel_leaderboard_list') || '[]');
+        const processed = processLeaderboard([...serverScores, ...localScores]);
+        setLeaderboard(processed);
+      })
+      .catch(() => {
+        const localScores = JSON.parse(localStorage.getItem('sentinel_leaderboard_list') || '[]');
+        setLeaderboard(processLeaderboard(localScores));
+      });
+  };
+
+  useEffect(() => {
+    fetchLeaderboard();
+  }, []);
+
+  // Submit Feedback Handler
+  const submitFeedback = (e) => {
+    if (e) e.preventDefault();
+    if (!feedbackText || feedbackText.trim() === '') return;
+
+    const currentMsg = feedbackText.trim();
+    const token = localStorage.getItem('token');
+    const activeUsername = user.username && user.username !== 'User' ? user.username : 'User';
+
+    const existingFeedback = JSON.parse(localStorage.getItem('sentinel_feedback_list') || '[]');
+    const newEntry = {
+      id: Date.now(),
+      username: activeUsername,
+      message: currentMsg,
+      type: 'General',
+      created_at: new Date().toISOString()
+    };
+    localStorage.setItem('sentinel_feedback_list', JSON.stringify([newEntry, ...existingFeedback]));
+
+    setFeedbackText('');
+    setFeedbackSent(true);
+    setTimeout(() => setFeedbackSent(false), 3000);
+
+    fetch('/api/feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ message: currentMsg, type: 'General' })
+    }).catch(err => console.log('Feedback submitted locally:', err));
+  };
+
   useEffect(() => {
     gameStateRef.current = gameState;
   }, [gameState]);
 
-  // Main canvas game logic hook.
+  // Main Canvas Game Loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // Set standard viewport dimensions for the canvas game.
     canvas.width = 640;
     canvas.height = 200;
 
-    // Dino model coordinates and attributes.
     let dino = {
       x: 50,
       y: canvas.height - 40,
@@ -75,8 +167,12 @@ export default function UserHub() {
     const baseSpeed = 5;
     let gameSpeed = baseSpeed * (difficultyRef.current === 'Easy' ? 0.8 : difficultyRef.current === 'Hard' ? 1.4 : 1);
 
-    // Listener for spacebar jump triggers.
     const handleKeyDown = (e) => {
+      const activeEl = document.activeElement;
+      if (activeEl && (activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'INPUT')) {
+        return;
+      }
+
       if (e.code === 'Space' && gameStateRef.current === 'PLAYING') {
         e.preventDefault();
         if (dino.isGrounded) {
@@ -89,7 +185,6 @@ export default function UserHub() {
       }
     };
 
-    // Listener for canvas click triggers.
     const handleCanvasClick = () => {
       if (gameStateRef.current === 'PLAYING') {
         if (dino.isGrounded) {
@@ -104,7 +199,6 @@ export default function UserHub() {
     window.addEventListener('keydown', handleKeyDown);
     canvas.addEventListener('click', handleCanvasClick);
 
-    // Reset the game state parameters to start a fresh run.
     const startGame = () => {
       obstacles = [];
       scoreRef.current = 0;
@@ -117,21 +211,50 @@ export default function UserHub() {
       setGameState('PLAYING');
     };
 
-    // End the current run and update the cached high score if a record is broken.
     const gameOver = () => {
       setGameState('GAMEOVER');
-      const currentHS = parseInt(localStorage.getItem('dino_highscore') || '0', 10);
-      if (scoreRef.current > currentHS) {
-        localStorage.setItem('dino_highscore', scoreRef.current.toString());
-        setHighScore(scoreRef.current);
+      const multiplier = getMultiplier(difficultyRef.current);
+      const finalScore = Math.floor((scoreRef.current / 10) * multiplier);
+
+      if (finalScore > 0) {
+        const stored = localStorage.getItem('user');
+        let activeUsername = user.username && user.username !== 'User' ? user.username : 'User';
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (parsed.username) activeUsername = parsed.username;
+          } catch(e) {}
+        }
+
+        const currentHS = parseInt(localStorage.getItem('dino_highscore') || '0', 10);
+        if (finalScore > currentHS) {
+          localStorage.setItem('dino_highscore', finalScore.toString());
+          setHighScore(finalScore);
+        }
+
+        const localList = JSON.parse(localStorage.getItem('sentinel_leaderboard_list') || '[]');
+        const newScoreObj = { username: activeUsername, score: finalScore, difficulty: difficultyRef.current };
+        const updatedList = processLeaderboard([newScoreObj, ...localList]);
+        localStorage.setItem('sentinel_leaderboard_list', JSON.stringify(updatedList));
+        setLeaderboard(updatedList);
+
+        const token = localStorage.getItem('token');
+        fetch('/api/leaderboard', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ score: finalScore, difficulty: difficultyRef.current })
+        })
+          .then(() => fetchLeaderboard())
+          .catch(() => {});
       }
     };
 
-    // Core drawing and physics update loop.
     const update = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Render the floor separator line.
       ctx.strokeStyle = '#30363d';
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -140,29 +263,26 @@ export default function UserHub() {
       ctx.stroke();
 
       if (gameStateRef.current === 'PLAYING') {
-        // Increment the running score during active gameplay.
         scoreRef.current += 1;
         if (scoreRef.current % 10 === 0) {
-          setScore(Math.floor(scoreRef.current / 10));
+          const mult = getMultiplier(difficultyRef.current);
+          const currentCalculatedScore = Math.floor((scoreRef.current / 10) * mult);
+          setScore(currentCalculatedScore);
         }
 
-        // Increase the horizontal speed gradually over time.
         if (scoreRef.current % 300 === 0) {
           gameSpeed += 0.5 * (difficultyRef.current === 'Easy' ? 0.8 : difficultyRef.current === 'Hard' ? 1.4 : 1);
         }
 
-        // Apply gravitational acceleration to the vertical movement.
         dino.vy += dino.gravity;
         dino.y += dino.vy;
 
-        // Constrain the dino to the ground when it lands.
         if (dino.y >= canvas.height - 10 - dino.height) {
           dino.y = canvas.height - 10 - dino.height;
           dino.vy = 0;
           dino.isGrounded = true;
         }
 
-        // Generate incoming block obstacles randomly with difficulty-adjusted spawn rate.
         obstacleTimerRef.current++;
         const spawnBase = 80 + Math.random() * 40;
         const spawnMultiplier = difficultyRef.current === 'Easy' ? 1.6 : difficultyRef.current === 'Hard' ? 0.6 : 1;
@@ -179,17 +299,14 @@ export default function UserHub() {
         }
       }
 
-      // Iterate through and draw each obstacle.
       obstacles.forEach((obs, index) => {
         if (gameStateRef.current === 'PLAYING') {
           obs.x -= gameSpeed;
         }
 
-        // Render the obstacle as a simple block shape.
         ctx.fillStyle = obs.color;
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
 
-        // Run Axis-Aligned Bounding Box collision checks.
         if (
           dino.x < obs.x + obs.width &&
           dino.x + dino.width > obs.x &&
@@ -199,21 +316,17 @@ export default function UserHub() {
           gameOver();
         }
 
-        // Remove obstacles that have moved off-screen.
         if (obs.x + obs.width < 0) {
           obstacles.splice(index, 1);
         }
       });
 
-      // Render the dino block representation.
       ctx.fillStyle = dino.color;
       ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
 
-      // Draw the dino's eye detail.
       ctx.fillStyle = '#0d1117';
       ctx.fillRect(dino.x + dino.width - 6, dino.y + 4, 3, 3);
 
-      // Render overlay prompts based on the current game state.
       if (gameStateRef.current === 'IDLE') {
         ctx.fillStyle = 'rgba(13, 17, 23, 0.8)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -232,8 +345,10 @@ export default function UserHub() {
         ctx.textAlign = 'center';
         ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 15);
 
+        const mult = getMultiplier(difficultyRef.current);
+        const finalCalculatedScore = Math.floor((scoreRef.current / 10) * mult);
         ctx.fillStyle = '#ffffff';
-        ctx.fillText(`Score: ${Math.floor(scoreRef.current / 10)}`, canvas.width / 2, canvas.height / 2 + 10);
+        ctx.fillText(`Score: ${finalCalculatedScore}`, canvas.width / 2, canvas.height / 2 + 10);
         ctx.fillText('Press SPACE or Click to Retry', canvas.width / 2, canvas.height / 2 + 35);
       }
 
@@ -242,7 +357,6 @@ export default function UserHub() {
 
     animationFrameIdRef.current = requestAnimationFrame(update);
 
-    // Clean up event listeners when the component unmounts.
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       canvas.removeEventListener('click', handleCanvasClick);
@@ -258,9 +372,9 @@ export default function UserHub() {
       </div>
 
       <div style={styles.grid}>
-        {/* Left column: profile and IAM role/permissions */}
+        {/* Left Column: Profile, IAM Permissions, and Feedback Form */}
         <div>
-          {/* Profile card container. */}
+          {/* Profile Card */}
           <div style={styles.profileCard}>
             <div style={styles.avatar}>👤</div>
             <h2 style={styles.username}>{user.username}</h2>
@@ -278,7 +392,7 @@ export default function UserHub() {
             </div>
           </div>
 
-          {/* IAM Role & Permissions card */}
+          {/* IAM Role & Permissions */}
           <div style={styles.roleCard}>
             <h3 style={styles.roleCardTitle}>IAM Role & Permissions</h3>
             <div style={styles.roleInfo}>
@@ -297,21 +411,62 @@ export default function UserHub() {
               </ul>
             </div>
           </div>
+
+          {/* Submit Feedback Form */}
+          <div style={styles.roleCard}>
+            <h3 style={styles.roleCardTitle}>Submit Feedback</h3>
+            <textarea
+              value={feedbackText}
+              onChange={(e) => setFeedbackText(e.target.value)}
+              onKeyDown={(e) => e.stopPropagation()}
+              placeholder="Share your feedback or issues that occurred..."
+              style={{
+                width: '100%',
+                minHeight: '80px',
+                backgroundColor: '#0d1117',
+                color: '#c9d1d9',
+                border: '1px solid #30363d',
+                borderRadius: '6px',
+                padding: '10px',
+                fontFamily: 'monospace',
+                marginBottom: '12px',
+                boxSizing: 'border-box'
+              }}
+            />
+            <button
+              type="button"
+              onClick={submitFeedback}
+              style={{
+                backgroundColor: feedbackSent ? '#2ea043' : '#238636',
+                color: '#ffffff',
+                border: '1px solid rgba(240,246,252,0.1)',
+                borderRadius: '6px',
+                padding: '10px 16px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                width: '100%',
+                fontSize: '0.9rem',
+                transition: 'all 0.2s ease-in-out'
+              }}
+            >
+              {feedbackSent ? '✓ Feedback Submitted Successfully!' : 'Submit Feedback'}
+            </button>
+          </div>
         </div>
 
-        {/* Sandbox canvas container. */}
+        {/* Right Column: Sandbox Game and Live Leaderboard */}
         <div style={styles.gameCard}>
           <div style={styles.gameHeader}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <h3 style={styles.gameTitle}>Dinosaur Sandbox Game</h3>
               <div style={styles.difficultyGroup}>
-                {['Easy','Normal','Hard'].map((lvl) => (
+                {['Easy', 'Normal', 'Hard'].map((lvl) => (
                   <button
                     key={lvl}
                     onClick={() => setDifficulty(lvl)}
                     style={lvl === difficulty ? { ...styles.difficultyBtn, ...styles.difficultyActive } : styles.difficultyBtn}
                   >
-                    {lvl}
+                    {lvl} ({lvl === 'Easy' ? 'x0.25' : lvl === 'Normal' ? 'x0.5' : 'x1.0'})
                   </button>
                 ))}
               </div>
@@ -329,13 +484,28 @@ export default function UserHub() {
           <div style={styles.controlsInfo}>
             Jump over the red blocks. Press Space or Click the area above.
           </div>
+
+          {/* Live Leaderboard Section */}
+          <div style={{ marginTop: '25px', paddingTop: '15px', borderTop: '1px solid #30363d' }}>
+            <h3 style={{ ...styles.roleCardTitle, marginBottom: '12px' }}>🏆 Top Leaderboard</h3>
+            <ul style={styles.permissionList}>
+              {leaderboard.length === 0 ? (
+                <li style={styles.permissionItem}>No High Scores Recorded Yet. Play to set a record!</li>
+              ) : (
+                leaderboard.map((entry, i) => (
+                  <li key={i} style={styles.permissionItem}>
+                    <strong>#{i + 1} {entry.username}</strong> — <span style={{ color: '#3ebd28', fontWeight: 'bold' }}>{entry.score} pts</span> ({entry.difficulty || 'Normal'})
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-// Shared styling for the user hub profile and game panel.
 const styles = {
   header: {
     display: 'flex',
@@ -414,7 +584,6 @@ const styles = {
   detailValue: {
     color: '#ffffff'
   },
-  // New IAM role card styles
   roleCard: {
     backgroundColor: '#161b22',
     border: '1px solid #30363d',
@@ -448,7 +617,9 @@ const styles = {
     padding: '6px 0',
     borderBottom: '1px dashed #30363d',
     color: '#c9d1d9',
-    fontSize: '0.85rem'
+    fontSize: '0.85rem',
+    display: 'flex',
+    justifyContent: 'space-between'
   },
   gameCard: {
     backgroundColor: '#161b22',
@@ -477,7 +648,6 @@ const styles = {
     fontSize: '0.9rem',
     fontFamily: 'monospace'
   },
-  // Difficulty buttons
   difficultyGroup: {
     display: 'flex',
     gap: '6px'
