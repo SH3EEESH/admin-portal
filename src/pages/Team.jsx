@@ -1,29 +1,25 @@
 import React from 'react';
 
+// Team members page
 function Team() {
   return (
     <div>
-      {/* Top section with the team title and total member count */}
       <div style={styles.header}>
         <h1 style={styles.title}>MLZH Productions</h1>
         <span style={styles.statusBadge}>● 4 Members</span>
       </div>
 
-      {/* Active tab showing the current team section */}
       <div style={styles.tabs}>
         <span style={styles.activeTab}>Architecture Team</span>
       </div>
 
-      {/* Main team content arranged into two columns for different focus areas */}
       <div style={styles.grid}>
-        
-        {/* Left column for backend and security team members */}
+        {/* Backend team members */}
         <div style={styles.columnWrapper}>
           <div style={styles.colHeader}>
             <h3 style={styles.columnTitle}>Backend & Security</h3>
           </div>
           
-          {/* Card for Mihail, who focuses on database design and security structure */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
               <strong style={styles.cardTitle}>👤 Mihail Stegall</strong>
@@ -31,19 +27,16 @@ function Team() {
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
-                {/* Main responsibility for this team member */}
                 <span>Primary Focus</span>
                 <span style={styles.value}>PostgreSQL Schema</span>
               </div>
               <div style={styles.row}>
-                {/* Related system or infrastructure area for this role */}
                 <span>Infrastructure</span>
-                <span style={styles.value}>IAM & Security</span>
+                <span style={styles.value}>IAM, Security & JWTs</span>
               </div>
             </div>
           </div>
 
-          {/* Card for Zachary, who leads backend development and authentication work */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
               <strong style={styles.cardTitle}>👤 Zachary Dinkelman</strong>
@@ -51,46 +44,40 @@ function Team() {
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
-                {/* Main responsibility for this team member */}
                 <span>Primary Focus</span>
-                <span style={styles.value}>Node.js / Express</span>
+                <span style={styles.value}>Node.js / Express APIs</span>
               </div>
               <div style={styles.row}>
-                {/* Authentication-related work covered by this role */}
                 <span>Authentication</span>
-                <span style={styles.value}>Auth Middleware & JWTs</span>
+                <span style={styles.value}>Auth Middleware</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right column for frontend and user experience team members */}
+        {/* Frontend team members */}
         <div style={styles.columnWrapper}>
           <div style={styles.colHeader}>
             <h3 style={styles.columnTitle}>Frontend UI/UX</h3>
           </div>
 
-          {/* Card for Lucas, who handles the user interface experience */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
-              <strong style={styles.cardTitle}>👤 Lucas Adkins </strong>
+              <strong style={styles.cardTitle}>👤 Lucas Adkins</strong>
               <span style={styles.btnLabel}>UI Engineer</span>
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
-                {/* Main responsibility for this team member */}
                 <span>Primary Focus</span>
                 <span style={styles.value}>React UI/UX</span>
               </div>
               <div style={styles.row}>
-                {/* External system integration work for this role */}
                 <span>Integration</span>
-                <span style={styles.value}>External API Integration</span>
+                <span style={styles.value}>Component Integration</span>
               </div>
             </div>
           </div>
 
-          {/* Card for Hunter, who focuses on routing and application state */}
           <div style={styles.card}>
             <div style={styles.cardTop}>
               <strong style={styles.cardTitle}>👤 Hunter Morrow</strong>
@@ -98,12 +85,10 @@ function Team() {
             </div>
             <div style={styles.cardBottom}>
               <div style={styles.row}>
-                {/* Main responsibility for this team member */}
                 <span>Primary Focus</span>
                 <span style={styles.value}>React Router</span>
               </div>
               <div style={styles.row}>
-                {/* State management area covered by this role */}
                 <span>State Management</span>
                 <span style={styles.value}>Application State</span>
               </div>
@@ -212,6 +197,7 @@ const styles = {
   row: { 
     display: 'flex', 
     justifyContent: 'space-between', 
+    alignItems: 'center',
     borderBottom: '1px dashed #30363d', 
     paddingBottom: '8px' 
   },

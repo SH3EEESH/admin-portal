@@ -64,6 +64,20 @@ export default function Register({ onLogin }) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
+      // Append new user to active accounts list for Admin Headquarters
+      const existingAccs = JSON.parse(localStorage.getItem('sentinel_active_accounts') || '[]');
+      const newAccObj = {
+        id: data.user.id || Date.now(),
+        username: data.user.username,
+        email: data.user.email,
+        role_id: data.user.role === 'Admin' ? 1 : 2,
+        role_name: data.user.role || 'User',
+        created_at: new Date().toISOString()
+      };
+      if (!existingAccs.some(a => a.username === data.user.username)) {
+        localStorage.setItem('sentinel_active_accounts', JSON.stringify([newAccObj, ...existingAccs]));
+      }
+
       // Inform the app that the new user is now logged in.
       setTimeout(() => {
         onLogin(data.user, data.token);

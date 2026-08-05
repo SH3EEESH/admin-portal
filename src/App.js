@@ -14,7 +14,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Retrieve user session on mount
+  // Load saved user session
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -28,7 +28,7 @@ function App() {
     setLoading(false);
   }, []);
 
-  const handleLogin = (loggedUser, token) => {
+  const handleLogin = (loggedUser) => {
     setUser(loggedUser);
   };
 
@@ -47,11 +47,11 @@ function App() {
   return (
     <Router>
       <div style={styles.appContainer}>
-        {/* Navigation bar is visible only when logged in */}
+        {/* Top Navbar */}
         {user && <NavigationBar user={user} />} 
         
         <div style={styles.layoutContainer}>
-          {/* Side panel for user profile info */}
+          {/* Sidebar */}
           {user && (
             <div style={styles.sidebar}>
               <h2 style={styles.logo}>Sentinel IAM</h2>
@@ -71,7 +71,7 @@ function App() {
             </div>
           )}
 
-          {/* Main page router */}
+          {/* Main content routes */}
           <div style={styles.main}>
             <Routes>
               {!user ? (
