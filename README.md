@@ -121,6 +121,7 @@ Created the "Dino" like google game for users to interact with.
 Assisted in identifying state synchronization bugs, resolving duplicate CSS style key overwrites, and isolating keypress event listeners so typing spaces in textareas does not trigger game loops. Helped in implementing some API errors or bugs, and finalized overall control.
 API & Database Resiliency: Assisted in writing SQL table auto-initialization queries (ALTER TABLE ADD COLUMN IF NOT EXISTS) and building fallback offline caching mechanisms for local state persistence. Helped debug any SQL syntax, and got rid of redundant language.
 UI/UX Refinement: Helped polish layout alignments, dark mode aesthetics, dynamic status badges, and IPv4 address formatting in Audit Logs.
+Also helped make the project deployable on Vercel, after getting many warnings and errors.
 
 ## Development Rules
 Verify 'node_modules' is ignored before commiting any changes
