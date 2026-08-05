@@ -128,5 +128,7 @@ Write concise and descriptive commit messages.
 
 ## Course Information
 Course: COSC 3351 - Internet Programming
+
 Semester: Summer 2026
+
 Assignment: Project submission
