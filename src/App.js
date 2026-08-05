@@ -101,6 +101,11 @@ function App() {
                 </>
               )}
             </Routes>
+
+            {/* Footer */}
+            <footer style={styles.footer}>
+              © {new Date().getFullYear()} MLZH Productions. All rights reserved.
+            </footer>
           </div>
           
         </div>
@@ -164,6 +169,16 @@ const styles = {
     flex: 1, 
     padding: '30px 40px', 
     overflowY: 'auto' 
+  },
+  footer: {
+    borderTop: '1px solid #30363d',
+    marginTop: '40px',
+    paddingTop: '20px',
+    paddingBottom: '20px',
+    color: '#8b949e',
+    fontSize: '0.8rem',
+    textAlign: 'center',
+    fontFamily: 'monospace'
   }
 };
 
