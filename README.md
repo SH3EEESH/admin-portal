@@ -124,6 +124,7 @@ UI/UX Refinement: Helped polish layout alignments, dark mode aesthetics, dynamic
 
 ## Development Rules
 Verify 'node_modules' is ignored before commiting any changes
+
 Write concise and descriptive commit messages.
 
 ## Course Information
